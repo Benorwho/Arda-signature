@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Arda Signature Generator</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #EDEADC; padding: 40px; display: flex; justify-content: center; }
+  .container { display: flex; gap: 40px; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 900px; width: 100%; flex-wrap: wrap; }
+  .controls { flex: 1; min-width: 300px; }
+  .preview-pane { flex: 1; min-width: 350px; border-left: 2px solid #eee; padding-left: 40px; }
+  h2 { margin-top: 0; color: #333; }
+  .field-group { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0; }
+  .field-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .field-header input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+  .field-header label { font-weight: 700; font-size: 14px; color: #333; cursor: pointer; margin: 0; }
+  .field-content { margin-left: 28px; }
+  .field-content.disabled { opacity: 0.4; pointer-events: none; }
+  label { display: block; margin-top: 10px; font-weight: 600; font-size: 13px; color: #666; }
+  input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+  button { margin-top: 25px; background: #000; color: #fff; border: none; padding: 15px 25px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: opacity 0.2s; }
+  button:hover { opacity: 0.8; }
+  .note { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.4; }
+  .error { color: #d32f2f; font-size: 12px; margin-top: 5px; }
+  .success { color: #4CAF50; font-size: 12px; margin-top: 5px; }
+  #imageUpload { padding: 8px; }
+  .image-option { margin-top: 10px; }
+  .image-option input[type="radio"] { width: auto; margin-right: 8px; }
+  .image-option label { display: inline; font-weight: normal; }
+  #customWAText, #customLinkedInText { margin-top: 10px; }
+  ::selection { background: #dcdcdc; }
+  .basic-fields { margin-bottom: 20px; }
+  .basic-fields label { font-weight: 600; font-size: 13px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="controls">
+    <h2>1. Enter Details</h2>
+    
+    <div class="basic-fields">
+      <label>Full Name</label>
+      <input type="text" id="inputName" placeholder="e.g. Benyamin Asgharnezhad" oninput="updateSignature()">
+      
+      <label>Job Title</label>
+      <input type="text" id="inputTitle" placeholder="e.g. Process Engineer" oninput="updateSignature()">
+    </div>
+
+    <!-- Secondary Role -->
+    <div class="field-group">
+      <div class="field-header">
+        <input type="checkbox" id="showSub" checked onchange="toggleField('sub')">
+        <label for="showSub">Secondary Role / Tagline</label>
+      </div>
+      <div class="field-content" id="subContent">
+        <input type="text" id="inputSub" placeholder="e.g. Research Assistant, UCL" oninput="updateSignature()">
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="field-group">
+      <div class="field-header">
+        <input type="checkbox" id="showEmail" checked onchange="toggleField('email')">
+        <label for="showEmail">Email Address</label>
+      </div>
+      <div class="field-content" id="emailContent">
+        <input type="text" id="inputEmail" placeholder="name@arda.bio" oninput="updateSignature()">
+      </div>
+    </div>
+
+    <!-- Mobile -->
+    <div class="field-group">
+      <div class="field-header">
+        <input type="checkbox" id="showMobile" checked onchange="toggleField('mobile')">
+        <label for="showMobile">Mobile Number</label>
+      </div>
+      <div class="field-content" id="mobileContent">
+        <input type="text" id="inputPhone" placeholder="07123 456789" oninput="updateSignature()">
+      </div>
+    </div>
+
+    <!-- WhatsApp -->
+    <div class="field-group">
+      <div class="field-header">
+        <input type="checkbox" id="showWhatsApp" checked onchange="toggleField('whatsapp')">
+        <label for="showWhatsApp">WhatsApp</label>
+      </div>
+      <div class="field-content" id="whatsappContent">
+        <label>WhatsApp Link Text</label>
+        <select id="waTextOption" onchange="toggleCustomWA()">
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Chat on WhatsApp">Chat on WhatsApp</option>
+          <option value="custom">Custom...</option>
+        </select>
+        <input type="text" id="customWAText" placeholder="Enter custom text" style="display: none;" oninput="updateSignature()">
+      </div>
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="field-group">
+      <div class="field-header">
+        <input type="checkbox" id="showLinkedIn" checked onchange="toggleField('linkedin')">
+        <label for="showLinkedIn">LinkedIn</label>
+      </div>
+      <div class="field-content" id="linkedinContent">
+        <label>LinkedIn Link Text</label>
+        <select id="linkedinTextOption" onchange="toggleCustomLinkedIn()">
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="handle">Show my handle</option>
+          <option value="custom">Custom...</option>
+        </select>
+        <input type="text" id="customLinkedInText" placeholder="Enter custom text" style="display: none;" oninput="updateSignature()">
+        
+        <label>LinkedIn Handle (e.g. benyamin-asg)</label>
+        <input type="text" id="inputLinkedin" placeholder="your-profile-id" oninput="updateSignature()">
+      </div>
+    </div>
+
+    <!-- Logo/Image -->
+    <div class="field-group">
+      <div class="field-header">
+        <input type="checkbox" id="showLogo" checked onchange="toggleField('logo')">
+        <label for="showLogo">Logo/Image</label>
+      </div>
+      <div class="field-content" id="logoContent">
+        <div class="image-option">
+          <input type="radio" name="imageOption" id="useDefault" value="default" checked onchange="toggleImageOption()">
+          <label for="useDefault">Use Arda Logo</label>
+        </div>
+        <div class="image-option">
+          <input type="radio" name="imageOption" id="useCustom" value="custom" onchange="toggleImageOption()">
+          <label for="useCustom">Upload Your Photo (max 50KB)</label>
+        </div>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none; margin-top: 10px;" onchange="handleImageUpload(event)">
+        <p class="note" id="imageStatus"></p>
+      </div>
+    </div>
+
+    <button onclick="copyToClipboard()">2. Copy Signature</button>
+    <p class="note" id="statusMsg">Click to copy, then paste into Outlook/Gmail signature settings.</p>
+  </div>
+
+  <div class="preview-pane">
+    <h2>Preview</h2>
+    <div id="signatureRender" style="border: 1px dashed #ccc; padding: 20px; background: #EDEADC;">
+      
+      <table style="font-family: 'Space Grotesk', 'Courier New', monospace; color: #000000; letter-spacing: -0.2px; width: 320px;" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-bottom: 5px;">
+            <span id="sigName" style="font-weight: 800; font-size: 18px; text-transform: uppercase; color: #000000;">BENYAMIN ASGHARNEZHAD</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-top: 4px solid #000000; padding-top: 10px; padding-bottom: 5px;"></td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 2px;">
+            <span id="sigTitle" style="font-weight: 700; font-size: 13px; color: #000;">Process Engineer</span>
+            <span style="color: #666; font-size: 13px;"> @ Arda Biomaterials</span>
+          </td>
+        </tr>
+        <tr id="rowSub">
+          <td style="padding-bottom: 12px;">
+             <span id="sigSub" style="font-size: 11px; color: #777; font-style: italic;">Research Assistant, UCL</span>
+          </td>
+        </tr>
+        <tr id="rowContact">
+          <td style="font-size: 12px; line-height: 1.6; color: #000;">
+            <span id="contactEmail" style="display: inline;">
+              <strong style="font-size: 14px;">E :: </strong> 
+              <a id="sigEmailLink" href="mailto:email@arda.bio" style="text-decoration: none; color: #000; border-bottom: 1px dotted #000;">email@arda.bio</a><br>
+            </span>
+            
+            <span id="contactMobile" style="display: inline;">
+              <strong style="font-size: 14px;">M :: </strong> 
+              <a id="sigMobileLink" href="tel:+447000000000" style="text-decoration: none; color: #000;">+44 7000 000 000</a><br>
+            </span>
+            
+            <span id="contactWhatsApp" style="display: inline;">
+              <strong style="font-size: 14px;">WA :: </strong> 
+              <a id="sigWhatsAppLink" href="#" style="text-decoration: none; color: #000;">WhatsApp</a><br>
+            </span>
+            
+            <span id="contactLinkedIn" style="display: inline;">
+              <strong style="font-size: 14px;">L :: </strong> 
+              <a id="sigLinkedinLink" href="#" style="text-decoration: none; color: #000;">LinkedIn</a>
+            </span>
+          </td>
+        </tr>
+        <tr id="rowLogo">
+          <td style="padding-top: 15px;">
+            <img id="sigImage" src="https://github.com/Benorwho/assets/blob/main/arda%20black%20logo-min.jpg?raw=true" 
+             width="80" 
+             height="80" 
+             style="display: block; width: 80px; height: 80px; object-fit: contain; border-radius: 2px;" 
+             alt="Logo">
+          </td>
+        </tr>
+      </table>
+      </div>
+  </div>
+</div>
+
+<script>
+  let customImageData = null;
+
+  function toggleField(field) {
+    const checkbox = document.getElementById('show' + field.charAt(0).toUpperCase() + field.slice(1));
+    const content = document.getElementById(field + 'Content');
+    
+    if (checkbox.checked) {
+      content.classList.remove('disabled');
+    } else {
+      content.classList.add('disabled');
+    }
+    
+    updateSignature();
+  }
+
+  function toggleImageOption() {
+    const useCustom = document.getElementById('useCustom').checked;
+    const uploadInput = document.getElementById('imageUpload');
+    const imageStatus = document.getElementById('imageStatus');
+    
+    if (useCustom) {
+      uploadInput.style.display = 'block';
+    } else {
+      uploadInput.style.display = 'none';
+      imageStatus.innerHTML = '';
+      customImageData = null;
+      document.getElementById('sigImage').src = 'https://github.com/Benorwho/assets/blob/main/arda%20black%20logo-min.jpg?raw=true';
+    }
+  }
+
+  function toggleCustomWA() {
+    const option = document.getElementById('waTextOption').value;
+    const customInput = document.getElementById('customWAText');
+    
+    if (option === 'custom') {
+      customInput.style.display = 'block';
+    } else {
+      customInput.style.display = 'none';
+    }
+    updateSignature();
+  }
+
+  function toggleCustomLinkedIn() {
+    const option = document.getElementById('linkedinTextOption').value;
+    const customInput = document.getElementById('customLinkedInText');
+    
+    if (option === 'custom') {
+      customInput.style.display = 'block';
+    } else {
+      customInput.style.display = 'none';
+    }
+    updateSignature();
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    const imageStatus = document.getElementById('imageStatus');
+    
+    if (!file) return;
+    
+    if (file.size > 51200) {
+      imageStatus.innerHTML = '<span class="error">❌ Image too large! Must be under 50KB. Try compressing it.</span>';
+      event.target.value = '';
+      return;
+    }
+    
+    if (!file.type.startsWith('image/')) {
+      imageStatus.innerHTML = '<span class="error">❌ Please upload an image file.</span>';
+      event.target.value = '';
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      customImageData = e.target.result;
+      document.getElementById('sigImage').src = customImageData;
+      const sizeKB = (file.size / 1024).toFixed(1);
+      imageStatus.innerHTML = `<span class="success">✓ Image uploaded (${sizeKB}KB)</span>`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function updateSignature() {
+    // Get Values
+    const name = document.getElementById('inputName').value || 'BENYAMIN ASGHARNEZHAD';
+    const title = document.getElementById('inputTitle').value || 'Process Engineer';
+    const sub = document.getElementById('inputSub').value;
+    const email = document.getElementById('inputEmail').value || 'name@arda.bio';
+    const phone = document.getElementById('inputPhone').value || '07000 000000';
+    const linkedin = document.getElementById('inputLinkedin').value;
+
+    // Update Text Fields
+    document.getElementById('sigName').innerText = name;
+    document.getElementById('sigTitle').innerText = title;
+    
+    // Toggle Secondary Role
+    const showSub = document.getElementById('showSub').checked;
+    const rowSub = document.getElementById('rowSub');
+    if (showSub && sub.trim() !== "") {
+      rowSub.style.display = "table-row";
+      document.getElementById('sigSub').innerText = sub;
+    } else {
+      rowSub.style.display = "none";
+    }
+
+    // Toggle Email
+    const showEmail = document.getElementById('showEmail').checked;
+    const contactEmail = document.getElementById('contactEmail');
+    if (showEmail) {
+      contactEmail.style.display = "inline";
+      const emailLink = document.getElementById('sigEmailLink');
+      emailLink.innerText = email;
+      emailLink.href = "mailto:" + email;
+    } else {
+      contactEmail.style.display = "none";
+    }
+
+    // Toggle Mobile
+    const showMobile = document.getElementById('showMobile').checked;
+    const contactMobile = document.getElementById('contactMobile');
+    if (showMobile) {
+      contactMobile.style.display = "inline";
+      let cleanPhone = phone.replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
+      if (cleanPhone.startsWith('44')) cleanPhone = cleanPhone.substring(2);
+      
+      let displayPhone = "+44 ";
+      if (cleanPhone.length >= 10) {
+        displayPhone += cleanPhone.substring(0, 4) + " " + cleanPhone.substring(4, 7) + " " + cleanPhone.substring(7);
+      } else {
+        displayPhone += cleanPhone;
+      }
+      
+      const mobileEl = document.getElementById('sigMobileLink');
+      mobileEl.href = "tel:+44" + cleanPhone;
+      mobileEl.innerText = displayPhone;
+    } else {
+      contactMobile.style.display = "none";
+    }
+
+    // Toggle WhatsApp
+    const showWhatsApp = document.getElementById('showWhatsApp').checked;
+    const contactWhatsApp = document.getElementById('contactWhatsApp');
+    if (showWhatsApp) {
+      contactWhatsApp.style.display = "inline";
+      let cleanPhone = phone.replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
+      if (cleanPhone.startsWith('44')) cleanPhone = cleanPhone.substring(2);
+      
+      const waLink = "https://wa.me/44" + cleanPhone;
+      let waText = document.getElementById('waTextOption').value;
+      if (waText === 'custom') {
+        waText = document.getElementById('customWAText').value || 'WhatsApp';
+      }
+      
+      const waEl = document.getElementById('sigWhatsAppLink');
+      waEl.href = waLink;
+      waEl.innerText = waText;
+    } else {
+      contactWhatsApp.style.display = "none";
+    }
+
+    // Toggle LinkedIn
+    const showLinkedIn = document.getElementById('showLinkedIn').checked;
+    const contactLinkedIn = document.getElementById('contactLinkedIn');
+    if (showLinkedIn) {
+      contactLinkedIn.style.display = "inline";
+      const liLink = document.getElementById('sigLinkedinLink');
+      liLink.href = "https://linkedin.com/in/" + linkedin;
+      
+      let liText = document.getElementById('linkedinTextOption').value;
+      if (liText === 'handle') {
+        liText = linkedin || 'LinkedIn';
+      } else if (liText === 'custom') {
+        liText = document.getElementById('customLinkedInText').value || 'LinkedIn';
+      }
+      
+      liLink.innerText = liText;
+    } else {
+      contactLinkedIn.style.display = "none";
+    }
+
+    // Toggle Logo
+    const showLogo = document.getElementById('showLogo').checked;
+    const rowLogo = document.getElementById('rowLogo');
+    if (showLogo) {
+      rowLogo.style.display = "table-row";
+    } else {
+      rowLogo.style.display = "none";
+    }
+
+    // Hide contact row if all contacts are hidden
+    const rowContact = document.getElementById('rowContact');
+    if (!showEmail && !showMobile && !showWhatsApp && !showLinkedIn) {
+      rowContact.style.display = "none";
+    } else {
+      rowContact.style.display = "table-row";
+    }
+  }
+
+  function copyToClipboard() {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    const node = document.getElementById('signatureRender');
+    
+    selection.removeAllRanges();
+    range.selectNodeContents(node);
+    selection.addRange(range);
+    
+    try {
+      document.execCommand('copy');
+      const btn = document.querySelector('button');
+      const originalText = btn.innerText;
+      btn.innerText = "✓ COPIED! Now Paste in Email";
+      btn.style.backgroundColor = "#4CAF50";
+      setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.backgroundColor = "#000";
+      }, 3000);
+    } catch (err) {
+      alert('Oops, unable to copy automatically. Please select the signature and copy manually (Ctrl+C).');
+    }
+  }
+
+  // Initialize
+  updateSignature();
+</script>
+
+</body>
+</html>
