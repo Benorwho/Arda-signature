@@ -48,7 +48,7 @@
 
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showSub" checked onchange="toggleSection('showSub', 'subContent')">
+        <input type="checkbox" id="showSub" checked onchange="toggleField('sub')">
         <label for="showSub">Secondary Role / Tagline</label>
       </div>
       <div class="field-content" id="subContent">
@@ -58,7 +58,7 @@
 
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showEmail" checked onchange="toggleSection('showEmail', 'emailContent')">
+        <input type="checkbox" id="showEmail" checked onchange="toggleField('email')">
         <label for="showEmail">Email Address</label>
       </div>
       <div class="field-content" id="emailContent">
@@ -68,7 +68,7 @@
 
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showMobile" checked onchange="toggleSection('showMobile', 'mobileContent')">
+        <input type="checkbox" id="showMobile" checked onchange="toggleField('mobile')">
         <label for="showMobile">Mobile Number</label>
       </div>
       <div class="field-content" id="mobileContent">
@@ -78,7 +78,7 @@
 
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showWhatsApp" checked onchange="toggleSection('showWhatsApp', 'whatsappContent')">
+        <input type="checkbox" id="showWhatsApp" checked onchange="toggleField('WhatsApp')">
         <label for="showWhatsApp">WhatsApp</label>
       </div>
       <div class="field-content" id="whatsappContent">
@@ -86,14 +86,15 @@
         <select id="waTextOption" onchange="toggleCustomWA()">
           <option value="WhatsApp">WhatsApp</option>
           <option value="Chat on WhatsApp">Chat on WhatsApp</option>
-          <option value="custom" selected>Custom...</option> </select>
-        <input type="text" id="customWAText" placeholder="Enter custom text (e.g. +44 7...)" style="display: block;" oninput="updateSignature()">
+          <option value="custom">Custom...</option>
+        </select>
+        <input type="text" id="customWAText" placeholder="Enter custom text" style="display: none;" oninput="updateSignature()">
       </div>
     </div>
 
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showLinkedIn" checked onchange="toggleSection('showLinkedIn', 'linkedinContent')">
+        <input type="checkbox" id="showLinkedIn" checked onchange="toggleField('LinkedIn')">
         <label for="showLinkedIn">LinkedIn</label>
       </div>
       <div class="field-content" id="linkedinContent">
@@ -101,8 +102,9 @@
         <select id="linkedinTextOption" onchange="toggleCustomLinkedIn()">
           <option value="LinkedIn">LinkedIn</option>
           <option value="handle">Show my handle</option>
-          <option value="custom" selected>Custom...</option> </select>
-        <input type="text" id="customLinkedInText" placeholder="Enter custom text (e.g. Connect)" style="display: block;" oninput="updateSignature()">
+          <option value="custom">Custom...</option>
+        </select>
+        <input type="text" id="customLinkedInText" placeholder="Enter custom text" style="display: none;" oninput="updateSignature()">
         
         <label>LinkedIn Handle (e.g. benyamin-asg)</label>
         <input type="text" id="inputLinkedin" placeholder="your-profile-id" oninput="updateSignature()">
@@ -111,7 +113,7 @@
 
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showLogo" checked onchange="toggleSection('showLogo', 'logoContent')">
+        <input type="checkbox" id="showLogo" checked onchange="toggleField('logo')">
         <label for="showLogo">Logo/Image</label>
       </div>
       <div class="field-content" id="logoContent">
@@ -196,10 +198,10 @@
 <script>
   let customImageData = null;
 
-  // ROBUST TOGGLE FUNCTION - NO STRING MANIPULATION
-  function toggleSection(checkboxId, contentId) {
-    const checkbox = document.getElementById(checkboxId);
-    const content = document.getElementById(contentId);
+  function toggleField(field) {
+    // This constructs the ID: 'show' + 'WhatsApp' -> 'showWhatsApp'
+    const checkbox = document.getElementById('show' + field.charAt(0).toUpperCase() + field.slice(1));
+    const content = document.getElementById(field.toLowerCase() + 'Content'); // Fixed to handle mixed case
     
     if (checkbox.checked) {
       content.classList.remove('disabled');
@@ -322,4 +324,106 @@
       if (cleanPhone.startsWith('44')) cleanPhone = cleanPhone.substring(2);
       
       let displayPhone = "+44 ";
-      if (cleanPhone.length >= 10
+      if (cleanPhone.length >= 10) {
+        displayPhone += cleanPhone.substring(0, 4) + " " + cleanPhone.substring(4, 7) + " " + cleanPhone.substring(7);
+      } else {
+        displayPhone += cleanPhone;
+      }
+      
+      const mobileEl = document.getElementById('sigMobileLink');
+      mobileEl.href = "tel:+44" + cleanPhone;
+      mobileEl.innerText = displayPhone;
+    } else {
+      contactMobile.style.display = "none";
+    }
+
+    // Toggle WhatsApp
+    const showWhatsApp = document.getElementById('showWhatsApp').checked;
+    const contactWhatsApp = document.getElementById('contactWhatsApp');
+    if (showWhatsApp) {
+      contactWhatsApp.style.display = "inline";
+      let cleanPhone = phone.replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
+      if (cleanPhone.startsWith('44')) cleanPhone = cleanPhone.substring(2);
+      
+      const waLink = "https://wa.me/44" + cleanPhone;
+      let waText = document.getElementById('waTextOption').value;
+      if (waText === 'custom') {
+        waText = document.getElementById('customWAText').value || 'WhatsApp';
+      }
+      
+      const waEl = document.getElementById('sigWhatsAppLink');
+      waEl.href = waLink;
+      waEl.innerText = waText;
+    } else {
+      contactWhatsApp.style.display = "none";
+    }
+
+    // Toggle LinkedIn
+    const showLinkedIn = document.getElementById('showLinkedIn').checked;
+    const contactLinkedIn = document.getElementById('contactLinkedIn');
+    if (showLinkedIn) {
+      contactLinkedIn.style.display = "inline";
+      const liLink = document.getElementById('sigLinkedinLink');
+      liLink.href = "https://linkedin.com/in/" + linkedin;
+      
+      let liText = document.getElementById('linkedinTextOption').value;
+      if (liText === 'handle') {
+        liText = linkedin || 'LinkedIn';
+      } else if (liText === 'custom') {
+        liText = document.getElementById('customLinkedInText').value || 'LinkedIn';
+      }
+      
+      liLink.innerText = liText;
+    } else {
+      contactLinkedIn.style.display = "none";
+    }
+
+    // Toggle Logo
+    const showLogo = document.getElementById('showLogo').checked;
+    const rowLogo = document.getElementById('rowLogo');
+    if (showLogo) {
+      rowLogo.style.display = "table-row";
+    } else {
+      rowLogo.style.display = "none";
+    }
+
+    // Hide contact row if all contacts are hidden
+    const rowContact = document.getElementById('rowContact');
+    if (!showEmail && !showMobile && !showWhatsApp && !showLinkedIn) {
+      rowContact.style.display = "none";
+    } else {
+      rowContact.style.display = "table-row";
+    }
+  }
+
+  function copyToClipboard() {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    const node = document.getElementById('signatureRender');
+    
+    selection.removeAllRanges();
+    range.selectNodeContents(node);
+    selection.addRange(range);
+    
+    try {
+      document.execCommand('copy');
+      const btn = document.querySelector('button');
+      const originalText = btn.innerText;
+      btn.innerText = "✓ COPIED! Now Paste in Email";
+      btn.style.backgroundColor = "#4CAF50";
+      setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.backgroundColor = "#000";
+      }, 3000);
+    } catch (err) {
+      alert('Oops, unable to copy automatically. Please select the signature and copy manually (Ctrl+C).');
+    }
+  }
+
+  // Initialize
+  updateSignature();
+</script>
+
+</body>
+</html>
