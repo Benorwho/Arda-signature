@@ -46,7 +46,6 @@
       <input type="text" id="inputTitle" placeholder="e.g. Process Engineer" oninput="updateSignature()">
     </div>
 
-    <!-- Secondary Role -->
     <div class="field-group">
       <div class="field-header">
         <input type="checkbox" id="showSub" checked onchange="toggleField('sub')">
@@ -57,7 +56,6 @@
       </div>
     </div>
 
-    <!-- Email -->
     <div class="field-group">
       <div class="field-header">
         <input type="checkbox" id="showEmail" checked onchange="toggleField('email')">
@@ -68,7 +66,6 @@
       </div>
     </div>
 
-    <!-- Mobile -->
     <div class="field-group">
       <div class="field-header">
         <input type="checkbox" id="showMobile" checked onchange="toggleField('mobile')">
@@ -79,10 +76,9 @@
       </div>
     </div>
 
-    <!-- WhatsApp -->
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showWhatsApp" checked onchange="toggleField('whatsapp')">
+        <input type="checkbox" id="showWhatsApp" checked onchange="toggleField('WhatsApp')">
         <label for="showWhatsApp">WhatsApp</label>
       </div>
       <div class="field-content" id="whatsappContent">
@@ -96,10 +92,9 @@
       </div>
     </div>
 
-    <!-- LinkedIn -->
     <div class="field-group">
       <div class="field-header">
-        <input type="checkbox" id="showLinkedIn" checked onchange="toggleField('linkedin')">
+        <input type="checkbox" id="showLinkedIn" checked onchange="toggleField('LinkedIn')">
         <label for="showLinkedIn">LinkedIn</label>
       </div>
       <div class="field-content" id="linkedinContent">
@@ -116,7 +111,6 @@
       </div>
     </div>
 
-    <!-- Logo/Image -->
     <div class="field-group">
       <div class="field-header">
         <input type="checkbox" id="showLogo" checked onchange="toggleField('logo')">
@@ -205,8 +199,9 @@
   let customImageData = null;
 
   function toggleField(field) {
+    // This constructs the ID: 'show' + 'WhatsApp' -> 'showWhatsApp'
     const checkbox = document.getElementById('show' + field.charAt(0).toUpperCase() + field.slice(1));
-    const content = document.getElementById(field + 'Content');
+    const content = document.getElementById(field.toLowerCase() + 'Content'); // Fixed to handle mixed case
     
     if (checkbox.checked) {
       content.classList.remove('disabled');
